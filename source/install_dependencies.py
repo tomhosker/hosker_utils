@@ -17,18 +17,26 @@ def install_dependency(
     ):
     """ Install a PIP package from a given package string, e.g. "pytest",
     "pylint>=2.12.2", etc. """
-    subprocess.run(
-        [internal_pip_command, "install", package_string], check=True
-    )
+    try:
+        subprocess.run(
+            [internal_pip_command, "install", package_string], check=True
+        )
+    except subprocess.CalledProcessError:
+        return False
+    return True
 
 def install_dependencies(
         package_list, internal_pip_command=DEFAULT_INTERNAL_PIP_COMMAND
     ):
     """ As above, but for several packages. """
     for package_string in package_list:
-        install_dependency(
-            package_string, internal_pip_command=internal_pip_command
-        )
+        local_result = \
+            install_dependency(
+                package_string, internal_pip_command=internal_pip_command
+            )
+        if not local_result:
+            return False
+    return True
 
 def install_apt_package(package_string, raise_error=True):
     """ Obviously, this will only work in a Debian-based system. """

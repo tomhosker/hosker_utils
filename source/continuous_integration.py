@@ -4,7 +4,6 @@ integration routine.
 """
 
 # Standard imports.
-import argparse
 import shutil
 import subprocess
 from glob import glob
