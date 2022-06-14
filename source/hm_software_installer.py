@@ -5,6 +5,7 @@ required on this computer.
 
 # Standard imports.
 import contextlib
+import json
 import os
 import shutil
 import subprocess
@@ -14,20 +15,35 @@ from pathlib import Path
 from typing import ClassVar
 
 # Local imports.
-from git_credentials import set_up_git_credentials
-from hmss_config import (
+from .git_credentials import set_up_git_credentials
+from .hmss_config import (
     DEFAULT_PATH_TO_GIT_CREDENTIALS,
     DEFAULT_PATH_TO_PAT,
     DEFAULT_GIT_USERNAME,
     DEFAULT_EMAIL_ADDRESS,
-    INTERNAL_PYTHON_COMMAND
+    DEFAULT_PATH_TO_HMSS_CONFIG_FILE,
+    INTERNAL_PYTHON_COMMAND,
+    CODE_INDENTATION
 )
-from install_dependencies import install_dependency
+from .install_dependencies import install_dependency
 
 # Local constants.
 DEFAULT_OS = "ubuntu"
 DEFAULT_TARGET_DIR = str(Path.home())
 DEFAULT_PATH_TO_WALLPAPER_DIR = str(Path(__file__).parent/"wallpaper")
+DEFAULT_HMSS_ARGUMENT_DICT = {
+    "this_os": DEFAULT_OS,
+    "target_dir": DEFAULT_TARGET_DIR,
+    "thunderbird_num": None,
+    "path_to_git_credentials": DEFAULT_PATH_TO_GIT_CREDENTIALS,
+    "path_to_pat": DEFAULT_PATH_TO_PAT,
+    "git_username": DEFAULT_GIT_USERNAME,
+    "email_address": DEFAULT_EMAIL_ADDRESS,
+    "path_to_wallpaper_dir": DEFAULT_PATH_TO_WALLPAPER_DIR,
+    "test_run": False,
+    "show_output": False,
+    "minimal": True
+}
 
 ##############
 # MAIN CLASS #
@@ -290,8 +306,7 @@ class HMSoftwareInstaller:
 
     def update_and_upgrade(self):
         """ Update and upgrade the existing software. """
-        if not self.run_apt_with_argument("update"):
-            return False
+        self.run_apt_with_argument("update")
         if not self.run_apt_with_argument("upgrade"):
             return False
         if not self.install_via_apt("software-properties-common"):
@@ -325,7 +340,7 @@ class HMSoftwareInstaller:
             method_to_run = item["method"]
             if not method_to_run():
                 self.failure_log.append(item["imperative"])
-                result = False
+                result = False 
         print("Changing wallpaper...")
         if not self.change_wallpaper():
             self.failure_log.append("Change wallpaper")
@@ -336,7 +351,7 @@ class HMSoftwareInstaller:
         """ Print a list of what failed to the screen. """
         if passed and with_flying_colours:
             print("Installation PASSED with flying colours!")
-        if passed:
+        elif passed:
             print("Installation PASSED but with non-essential failures.")
         else:
             print("Installation FAILED.")
@@ -383,16 +398,34 @@ def check_command_exists(command):
         return True
     return False
 
+def create_default_hmss_config_file(path_to=DEFAULT_PATH_TO_HMSS_CONFIG_FILE):
+    """ Create the default HMSS config file. """
+    if Path(path_to).exists():
+        return
+    with open(path_to, "w") as config_file:
+        json.dump(
+            DEFAULT_HMSS_ARGUMENT_DICT, config_file, indent=CODE_INDENTATION
+        )
+
 def make_installer_obj(argument_dict):
     """ Ronseal. """
     result = HMSoftwareInstaller()
-    if argument_dict:
-        for attribute_name in argument_dict.keys():
-            attribute_value = argument_dict[attribute_name]
-            setattr(result, attribute_name, attribute_value)
+    for attribute_name in argument_dict.keys():
+        attribute_value = argument_dict[attribute_name]
+        setattr(result, attribute_name, attribute_value)
     return result
 
-def run_hmss(argument_dict=None):
+def install_hmss(path_to_config_file=DEFAULT_PATH_TO_HMSS_CONFIG_FILE):
     """ Make the installer object, and then run it. """
+    if not Path(path_to_config_file).exists():
+        print(
+            "No config file found. I'm going to create one for you now at "+
+            path_to_config_file
+        )
+        create_default_hmss_config_file(path_to=path_to_config_file)
+        print("Please have a look at this file, and then run me again.")
+        return
+    with open(path_to_config_file, "r") as config_file:
+        argument_dict = json.load(config_file)
     installer_obj = make_installer_obj(argument_dict)
     installer_obj.run()

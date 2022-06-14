@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 
 # Local imports.
-from hmss_config import (
+from .hmss_config import (
     DEFAULT_EMAIL_ADDRESS,
     DEFAULT_ENCODING,
     DEFAULT_GIT_USERNAME,

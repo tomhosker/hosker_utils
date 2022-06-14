@@ -7,11 +7,12 @@ from setuptools import setup
 
 # Local constants.
 PACKAGE_NAME = "hosker_utils"
-VERSION = "1.0.0"
+VERSION = "2.0.0"
 DESCRIPTION = "General utility functions"
 GIT_URL_STEM = "https://github.com/tomhosker"
 AUTHOR = "Tom Hosker"
 AUTHOR_EMAIL = "tomdothosker@gmail.com"
+SCRIPT_PATHS = ["scripts/install_hmss"]
 INSTALL_REQUIRES = (
     "pylint>=2.12.2", "pytest>=7.1.2", "pytest-cov", "termcolor"
 )
@@ -30,5 +31,6 @@ setup(
     license="MIT",
     package_dir={ PACKAGE_NAME: "source" },
     packages=[PACKAGE_NAME],
+    scripts=SCRIPT_PATHS,
     install_requires=INSTALL_REQUIRES
 )
