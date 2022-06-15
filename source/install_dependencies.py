@@ -38,13 +38,14 @@ def install_dependencies(
             return False
     return True
 
-def install_apt_package(package_string, raise_error=True):
+def install_apt_package(package_string, raise_error=True, quiet=False):
     """ Obviously, this will only work in a Debian-based system. """
-    print(
-        "I'm going to need superuser privileges to install "+
-        package_string+
-        "..."
-    )
+    if not quiet:
+        print(
+            "I'm going to need superuser privileges to install "+
+            package_string+
+            "..."
+        )
     try:
         subprocess.run(
             ["sudo", "apt-get", "install", package_string], check=True
@@ -54,3 +55,14 @@ def install_apt_package(package_string, raise_error=True):
             raise
         return False
     return True
+
+def install_apt_packages(package_strings, raise_error=True, quiet=False):
+    """ An iterative version of the above. """
+    if not quiet:
+        print(
+            "I'm going to need superuser privileges to install "+
+            str(package_strings)+
+            "..."
+        )
+    for package_string in package_strings:
+        install_apt_package(package_string, raise_error=raise_error, quiet=True)

@@ -7,5 +7,8 @@ through the modules in which they are defined.
 # Local imports.
 from .continuous_integration import run_continuous_integration
 from .install_dependencies import (
-    install_dependency, install_dependencies, install_apt_package
+    install_dependency,
+    install_dependencies,
+    install_apt_package,
+    install_apt_packages
 )
