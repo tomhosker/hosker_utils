@@ -7,12 +7,12 @@ from setuptools import setup
 
 # Local constants.
 PACKAGE_NAME = "hosker_utils"
-VERSION = "2.1.0"
+VERSION = "2.2.0"
 DESCRIPTION = "General utility functions"
 GIT_URL_STEM = "https://github.com/tomhosker"
 AUTHOR = "Tom Hosker"
 AUTHOR_EMAIL = "tomdothosker@gmail.com"
-SCRIPT_PATHS = ["scripts/install_hmss"]
+SCRIPT_PATHS = ("scripts/install-hmss", "scripts/back-up-royal-repos")
 INSTALL_REQUIRES = (
     "pylint>=2.12.2", "pytest>=7.1.2", "pytest-cov", "termcolor"
 )
