@@ -49,6 +49,7 @@ DEFAULT_HMSS_ARGUMENT_DICT = {
     "show_output": False,
     "minimal": True
 }
+SH = "sh" # The command to run a shell script.
 
 ##############
 # MAIN CLASS #
@@ -74,6 +75,7 @@ class HMSoftwareInstaller:
     git_logger: logging.Logger = None
 
     # Class attributes.
+    BASHRC_ADDITION: ClassVar[str] = "back-up-royal-repos &>/dev/null &"
     CHROME_DEB: ClassVar[str] = "google-chrome-stable_current_amd64.deb"
     CHROME_STEM: ClassVar[str] = "https://dl.google.com/linux/direct/"
     EXPECTED_PATH_TO_GOOGLE_CHROME_COMMAND: ClassVar[str] = \
@@ -87,6 +89,7 @@ class HMSoftwareInstaller:
     INTERNAL_PYTHON_COMMAND: ClassVar[str] = INTERNAL_PYTHON_COMMAND
     MISSING_FROM_CHROME: ClassVar[tuple] = ("eog", "nautilus")
     OTHER_THIRD_PARTY: ClassVar[tuple] = ("gedit-plugins", "inkscape")
+    PATH_TO_BASHRC: ClassVar[str] = str(Path.home()/".bashrc")
     SUPPORTED_PLATFORMS: ClassVar[set] = {
         "ubuntu", "chrome-os", "raspian", "linux-based"
     }
@@ -142,6 +145,10 @@ class HMSoftwareInstaller:
                 "imperative": "Clone royal repos",
                 "gerund": "Cloning royal repos",
                 "method": self.clone_royal_repos
+            }, {
+                "imperative": "Schedule royal repo backups",
+                "gerund": "Scheduling royal repo backups",
+                "method": self.schedule_royal_repo_backups
             }
         )
         return result
@@ -200,7 +207,8 @@ class HMSoftwareInstaller:
         else:
             try:
                 subprocess.run(arguments, check=True, stdout=subprocess.DEVNULL)
-            except subprocess.CalledProcessError:
+            except subprocess.CalledProcessError as err:
+                self.git_logger.error(err)
                 return False
         return True
 
@@ -255,7 +263,7 @@ class HMSoftwareInstaller:
         """ Clone ALL royal repos. """
         result = True
         for repo in self.royal_repos:
-            if not self.clone_royal_repo(repo):
+            if not self.clone_repo(repo):
                 result = False
         return result
 
@@ -284,10 +292,20 @@ class HMSoftwareInstaller:
     def back_up_royal_repos(self):
         """ Back up ALL royal repos. """
         result = True
+        self.git_logger.info("Backing up royal repos...")
         for repo in self.royal_repos:
             if not self.back_up_repo(repo):
                 result = False
         return result
+
+    def schedule_royal_repo_backups(self):
+        """ Make sure we back up of royal repos at regular intervals. """
+        if Path(self.PATH_TO_BASHRC).exists():
+            with open(self.PATH_TO_BASHRC, "a+") as bashrc:
+                if self.BASHRC_ADDITION not in bashrc.read():
+                    bashrc.write(self.BASHRC_ADDITION)
+            return True
+        return False
 
     def install_other_third_party(self):
         """ Install some other useful packages. """
