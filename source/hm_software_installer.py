@@ -32,7 +32,6 @@ from .hmss_config import (
     DEFAULT_TARGET_DIR,
     INTERNAL_PYTHON_COMMAND
 )
-from .install_dependencies import install_dependency
 
 # Local constants.
 DEFAULT_HMSS_ARGUMENT_DICT = {
@@ -49,7 +48,6 @@ DEFAULT_HMSS_ARGUMENT_DICT = {
     "show_output": False,
     "minimal": True
 }
-SH = "sh" # The command to run a shell script.
 
 ##############
 # MAIN CLASS #
@@ -75,15 +73,15 @@ class HMSoftwareInstaller:
     git_logger: logging.Logger = None
 
     # Class attributes.
-    BASHRC_ADDITION: ClassVar[str] = "back-up-royal-repos &>/dev/null &"
+    BASHRC_ADDITION: ClassVar[str] = "back-up-royal-repos &>/dev/null & disown"
     CHROME_DEB: ClassVar[str] = "google-chrome-stable_current_amd64.deb"
     CHROME_STEM: ClassVar[str] = "https://dl.google.com/linux/direct/"
     EXPECTED_PATH_TO_GOOGLE_CHROME_COMMAND: ClassVar[str] = \
         "/usr/bin/google-chrome"
     GIT_CLONE: ClassVar[tuple] = ("git", "clone")
     GIT_FETCH: ClassVar[tuple] = ("git", "fetch", "--all")
-    GIT_LOG_FILENAME: str = "hm_git.log"
-    GIT_LOG_FORMAT: str = "%(asctime)s | %(levelname)s | %(message)s"
+    GIT_LOG_FILENAME: ClassVar[str] = "hm_git.log"
+    GIT_LOG_FORMAT: ClassVar[str] = "%(asctime)s | %(levelname)s | %(message)s"
     GIT_PULL: ClassVar[tuple] = ("git", "pull", "origin", DEFAULT_BRANCH_NAME)
     GIT_URL_STEM: ClassVar[str] = "https://github.com/"
     INTERNAL_PYTHON_COMMAND: ClassVar[str] = INTERNAL_PYTHON_COMMAND
@@ -153,6 +151,36 @@ class HMSoftwareInstaller:
         )
         return result
 
+    def run_with_indulgence(self, arguments):
+        """ Run a command, and don't panic immediately if we get a non-zero
+        return code. """
+        if self.test_run:
+            return True
+        if self.show_output:
+            print("Running subprocess.run() with arguments:")
+            print(arguments)
+            try:
+                subprocess.run(arguments, check=True)
+            except subprocess.CalledProcessError:
+                return False
+        else:
+            try:
+                subprocess.run(arguments, check=True, stdout=subprocess.DEVNULL)
+            except subprocess.CalledProcessError:
+                return False
+        return True
+
+    def install_via_apt(self, package_name, command=None):
+        """ Attempt to install a package, and tell me how it went. """
+        if not command:
+            command = package_name
+        if check_command_exists(command):
+            return True
+        arguments = ["sudo", "apt-get", "install", package_name, "--yes"]
+        if self.run_with_indulgence(arguments):
+            return True
+        return False
+
     def check_platform(self):
         """ Test whether the platform we're using is supported. """
         if self.this_platform in self.SUPPORTED_PLATFORMS:
@@ -184,32 +212,11 @@ class HMSoftwareInstaller:
             return True
         chrome_url = urllib.parse.urljoin(self.CHROME_STEM, self.CHROME_DEB)
         chrome_deb_path = "./"+self.CHROME_DEB
-        download_process = subprocess.run(["wget", chrome_url])
-        if download_process.returncode != 0:
+        if not self.run_with_indulgence(["wget", chrome_url]):
             return False
         if not self.install_via_apt(chrome_deb_path):
             return False
         os.remove(chrome_deb_path)
-        return True
-
-    def run_with_indulgence(self, arguments):
-        """ Run a command, and don't panic immediately if we get a non-zero
-        return code. """
-        if self.test_run:
-            return True
-        if self.show_output:
-            print("Running subprocess.run() with arguments:")
-            print(arguments)
-            try:
-                subprocess.run(arguments, check=True)
-            except subprocess.CalledProcessError:
-                return False
-        else:
-            try:
-                subprocess.run(arguments, check=True, stdout=subprocess.DEVNULL)
-            except subprocess.CalledProcessError as err:
-                self.git_logger.error(err)
-                return False
         return True
 
     def change_wallpaper(self):
@@ -300,10 +307,14 @@ class HMSoftwareInstaller:
 
     def schedule_royal_repo_backups(self):
         """ Make sure we back up of royal repos at regular intervals. """
+        append_bool = False
         if Path(self.PATH_TO_BASHRC).exists():
-            with open(self.PATH_TO_BASHRC, "a+") as bashrc:
+            with open(self.PATH_TO_BASHRC, "r") as bashrc:
                 if self.BASHRC_ADDITION not in bashrc.read():
-                    bashrc.write(self.BASHRC_ADDITION)
+                    append_bool = True
+            if append_bool:
+                with open(self.PATH_TO_BASHRC, "a") as bashrc:
+                    bashrc.write("\n"+self.BASHRC_ADDITION)
             return True
         return False
 
@@ -333,17 +344,6 @@ class HMSoftwareInstaller:
         arguments = ["sudo", "apt-get", "--yes", argument]
         result = self.run_with_indulgence(arguments)
         return result
-
-    def install_via_apt(self, package_name, command=None):
-        """ Attempt to install a package, and tell me how it went. """
-        if not command:
-            command = package_name
-        if check_command_exists(command):
-            return True
-        arguments = ["sudo", "apt-get", "install", package_name, "--yes"]
-        if self.run_with_indulgence(arguments):
-            return True
-        return False
 
     def update_and_upgrade(self):
         """ Update and upgrade the existing software. """
@@ -381,7 +381,7 @@ class HMSoftwareInstaller:
             method_to_run = item["method"]
             if not method_to_run():
                 self.failure_log.append(item["imperative"])
-                result = False 
+                result = False
         print("Changing wallpaper...")
         if not self.change_wallpaper():
             self.failure_log.append("Change wallpaper")

@@ -19,6 +19,7 @@ PATH_TO_BACKUP_LINTER_RC = \
 DEFAULT_PATH_TO_TEST_INI = "pytest.ini"
 PATH_TO_BACKUP_TEST_INI = \
     str(Path(__file__).parent/"backup_configs"/"backup_pytest.ini")
+PIP_INSTALL_THIS = ("pip", "install", ".")
 
 #############
 # FUNCTIONS #

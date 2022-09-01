@@ -3,7 +3,7 @@ This code tests the HMSoftwareInstaller class.
 """
 
 # Local imports.
-from hm_software_installer import HMSoftwareInstaller
+from source.hm_software_installer import HMSoftwareInstaller
 
 ###########
 # TESTING #

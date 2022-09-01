@@ -6,4 +6,4 @@ fail-under=8
 max-line-length=80
 
 [MESSAGES CONTROL]
-disable=import-error,no-member,too-many-instance-attributes
+disable=import-error,no-member,too-many-instance-attributes,unspecified-encoding

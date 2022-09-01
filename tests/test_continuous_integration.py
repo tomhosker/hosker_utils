@@ -3,7 +3,7 @@ This code tests some of the continuous integration functions.
 """
 
 # Source imports.
-from continuous_integration import print_encased
+from source.continuous_integration import print_encased
 
 ###########
 # TESTING #
