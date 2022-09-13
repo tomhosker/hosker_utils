@@ -7,7 +7,7 @@ from setuptools import setup
 
 # Local constants.
 PACKAGE_NAME = "hosker_utils"
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 DESCRIPTION = "General utility functions"
 GIT_URL_STEM = "https://github.com/tomhosker"
 AUTHOR = "Tom Hosker"

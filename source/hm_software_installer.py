@@ -45,8 +45,8 @@ DEFAULT_HMSS_ARGUMENT_DICT = {
     "path_to_wallpaper_dir": DEFAULT_PATH_TO_WALLPAPER_DIR,
     "royal_repos": DEFAULT_ROYAL_REPOS,
     "test_run": False,
-    "show_output": False,
-    "minimal": True
+    "show_output": True,
+    "minimal": False
 }
 
 ##############
@@ -85,7 +85,7 @@ class HMSoftwareInstaller:
     GIT_PULL: ClassVar[tuple] = ("git", "pull", "origin", DEFAULT_BRANCH_NAME)
     GIT_URL_STEM: ClassVar[str] = "https://github.com/"
     INTERNAL_PYTHON_COMMAND: ClassVar[str] = INTERNAL_PYTHON_COMMAND
-    MISSING_FROM_CHROME: ClassVar[tuple] = ("eog", "nautilus")
+    MISSING_FROM_CHROME: ClassVar[tuple] = ("gedit", "eog", "nautilus")
     OTHER_THIRD_PARTY: ClassVar[tuple] = ("gedit-plugins", "inkscape")
     PATH_TO_BASHRC: ClassVar[str] = str(Path.home()/".bashrc")
     SUPPORTED_PLATFORMS: ClassVar[set] = {
