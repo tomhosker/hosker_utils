@@ -85,7 +85,9 @@ class HMSoftwareInstaller:
     GIT_PULL: ClassVar[tuple] = ("git", "pull", "origin", DEFAULT_BRANCH_NAME)
     GIT_URL_STEM: ClassVar[str] = "https://github.com/"
     INTERNAL_PYTHON_COMMAND: ClassVar[str] = INTERNAL_PYTHON_COMMAND
-    MISSING_FROM_CHROME: ClassVar[tuple] = ("gedit", "eog", "nautilus")
+    MISSING_FROM_CHROME: ClassVar[tuple] = (
+        "eog", "evince", "gedit", "nautilus"
+    )
     OTHER_THIRD_PARTY: ClassVar[tuple] = ("gedit-plugins", "inkscape")
     PATH_TO_BASHRC: ClassVar[str] = str(Path.home()/".bashrc")
     SUPPORTED_PLATFORMS: ClassVar[set] = {
