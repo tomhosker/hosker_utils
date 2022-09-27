@@ -16,6 +16,7 @@ SCRIPT_PATHS = ("scripts/install-hmss", "scripts/back-up-royal-repos")
 INSTALL_REQUIRES = (
     "pylint>=2.12.2", "pytest>=7.1.2", "pytest-cov", "termcolor"
 )
+INCLUDE_PACKAGE_DATA = True
 
 ###################################
 # THIS IS WHERE THE MAGIC HAPPENS #
@@ -32,5 +33,6 @@ setup(
     package_dir={ PACKAGE_NAME: "source" },
     packages=[PACKAGE_NAME],
     scripts=SCRIPT_PATHS,
-    install_requires=INSTALL_REQUIRES
+    install_requires=INSTALL_REQUIRES,
+    include_package_data=INCLUDE_PACKAGE_DATA
 )
