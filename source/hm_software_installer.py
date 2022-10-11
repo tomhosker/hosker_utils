@@ -79,7 +79,7 @@ class HMSoftwareInstaller:
     EXPECTED_PATH_TO_GOOGLE_CHROME_COMMAND: ClassVar[str] = \
         "/usr/bin/google-chrome"
     GIT_CLONE: ClassVar[tuple] = ("git", "clone")
-    GIT_FETCH: ClassVar[tuple] = ("git", "fetch", "--all")
+    GIT_FETCH: ClassVar[tuple] = ("git", "fetch")
     GIT_LOG_FILENAME: ClassVar[str] = "hm_git.log"
     GIT_LOG_FORMAT: ClassVar[str] = "%(asctime)s | %(levelname)s | %(message)s"
     GIT_PULL: ClassVar[tuple] = ("git", "pull", "origin", DEFAULT_BRANCH_NAME)
