@@ -25,8 +25,8 @@ DEFAULT_ROYAL_REPOS = (
     "hgmj",
     "hoskers_almanack",
     "hosker_utils",
-    "kingdom-of-cyprus",
-    "lucifer-in-starlight",
+    "kingdom_of_cyprus",
+    "lucifer_in_starlight",
     "vanilla_web"
 )
 DEFAULT_TARGET_DIR = str(PATH_OBJ_TO_HOME)
