@@ -55,6 +55,7 @@ DEFAULT_HMSS_ARGUMENT_DICT = {
     "royal_repos": DEFAULT_ROYAL_REPOS,
     "test_run": False,
     "show_output": True,
+    "include_git": True,
     "minimal": False
 }
 
