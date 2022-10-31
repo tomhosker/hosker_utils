@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# Crash on the first error.
 set -e
 
 # Check/install twine.
@@ -11,4 +12,4 @@ python3 setup.py check
 python3 setup.py sdist
 python3 setup.py bdist_wheel
 #twine upload --repository-url https://test.pypi.org/legacy/ dist/* # This is for uploading to test.pypi.
-twine upload dist/*
+twine upload dist/* --verbose
