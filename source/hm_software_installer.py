@@ -30,7 +30,16 @@ from .hmss_config import (
     DEFAULT_PATH_TO_WALLPAPER_DIR,
     DEFAULT_ROYAL_REPOS,
     DEFAULT_TARGET_DIR,
-    INTERNAL_PYTHON_COMMAND
+    DEFAULT_WALLPAPER_FN,
+    GIT,
+    INTERNAL_PYTHON_COMMAND,
+    UBUNTU,
+    CHROME_OS,
+    RASPBIAN,
+    OTHER_DEBIAN,
+    IMPERATIVE,
+    GERUND,
+    METHOD
 )
 
 # Local constants.
@@ -68,6 +77,7 @@ class HMSoftwareInstaller:
     royal_repos: tuple = DEFAULT_ROYAL_REPOS
     test_run: bool = False
     show_output: bool = False
+    include_git: bool = True
     minimal: bool = True
     failure_log: list = field(default_factory=list)
     git_logger: logging.Logger = None
@@ -78,11 +88,11 @@ class HMSoftwareInstaller:
     CHROME_STEM: ClassVar[str] = "https://dl.google.com/linux/direct/"
     EXPECTED_PATH_TO_GOOGLE_CHROME_COMMAND: ClassVar[str] = \
         "/usr/bin/google-chrome"
-    GIT_CLONE: ClassVar[tuple] = ("git", "clone")
-    GIT_FETCH: ClassVar[tuple] = ("git", "fetch")
+    GIT_CLONE: ClassVar[tuple] = (GIT, "clone")
+    GIT_FETCH: ClassVar[tuple] = (GIT, "fetch")
     GIT_LOG_FILENAME: ClassVar[str] = "hm_git.log"
     GIT_LOG_FORMAT: ClassVar[str] = "%(asctime)s | %(levelname)s | %(message)s"
-    GIT_PULL: ClassVar[tuple] = ("git", "pull", "origin", DEFAULT_BRANCH_NAME)
+    GIT_PULL: ClassVar[tuple] = (GIT, "pull", "origin", DEFAULT_BRANCH_NAME)
     GIT_URL_STEM: ClassVar[str] = "https://github.com/"
     INTERNAL_PYTHON_COMMAND: ClassVar[str] = INTERNAL_PYTHON_COMMAND
     MISSING_FROM_CHROME: ClassVar[tuple] = (
@@ -91,13 +101,14 @@ class HMSoftwareInstaller:
     OTHER_THIRD_PARTY: ClassVar[tuple] = ("gedit-plugins", "inkscape")
     PATH_TO_BASHRC: ClassVar[str] = str(Path.home()/".bashrc")
     SUPPORTED_PLATFORMS: ClassVar[set] = {
-        "ubuntu", "chrome-os", "raspian", "linux-based"
+        UBUNTU, CHROME_OS, RASPBIAN, OTHER_DEBIAN
     }
     WALLPAPER_EXT: ClassVar[str] = ".png"
     WALLPAPER_STEM: ClassVar[str] = "wallpaper_t"
 
     def __post_init__(self):
-        self.git_logger = self.make_git_logger()
+        if self.include_git:
+            self.git_logger = self.make_git_logger()
 
     def make_git_logger(self):
         """ Construct our Git logging object. """
@@ -115,17 +126,20 @@ class HMSoftwareInstaller:
         """ Build a tuple of essential processes to run. """
         result = (
             {
-                "imperative": "Check Platform",
-                "gerund": "Checking Platform",
-                "method": self.check_platform
+                IMPERATIVE: "Check Platform",
+                GERUND: "Checking platform",
+                METHOD: self.check_platform,
+                GIT: False
             }, {
-                "imperative": "Update and upgrade",
-                "gerund": "Updating and upgrading",
-                "method": self.update_and_upgrade
+                IMPERATIVE: "Update and upgrade",
+                GERUND: "Updating and upgrading",
+                METHOD: self.update_and_upgrade,
+                GIT: False
             }, {
-                "imperative": "Set up Git",
-                "gerund": "Setting up Git",
-                "method": self.set_up_git
+                IMPERATIVE: "Set up Git",
+                GERUND: "Setting up Git",
+                METHOD: self.set_up_git,
+                GIT: True
             }
         )
         return result
@@ -134,21 +148,25 @@ class HMSoftwareInstaller:
         """ Build a tuple of non-essential processes to run. """
         result = (
             {
-                "imperative": "Install Google Chrome",
-                "gerund": "Installing Google Chrome",
-                "method": self.install_google_chrome
+                IMPERATIVE: "Install Google Chrome",
+                GERUND: "Installing Google Chrome",
+                METHOD: self.install_google_chrome,
+                GIT: False
             }, {
-                "imperative": "Install other third party",
-                "gerund": "Installing other third party",
-                "method": self.install_other_third_party
+                IMPERATIVE: "Install other third party",
+                GERUND: "Installing other third party",
+                METHOD: self.install_other_third_party,
+                GIT: False
             }, {
-                "imperative": "Clone royal repos",
-                "gerund": "Cloning royal repos",
-                "method": self.clone_royal_repos
+                IMPERATIVE: "Clone royal repos",
+                GERUND: "Cloning royal repos",
+                METHOD: self.clone_royal_repos,
+                GIT: True
             }, {
-                "imperative": "Schedule royal repo backups",
-                "gerund": "Scheduling royal repo backups",
-                "method": self.schedule_royal_repo_backups
+                IMPERATIVE: "Schedule royal repo backups",
+                GERUND: "Scheduling royal repo backups",
+                METHOD: self.schedule_royal_repo_backups,
+                GIT: True
             }
         )
         return result
@@ -172,17 +190,6 @@ class HMSoftwareInstaller:
                 return False
         return True
 
-    def install_via_apt(self, package_name, command=None):
-        """ Attempt to install a package, and tell me how it went. """
-        if not command:
-            command = package_name
-        if check_command_exists(command):
-            return True
-        arguments = ["sudo", "apt-get", "install", package_name, "--yes"]
-        if self.run_with_indulgence(arguments):
-            return True
-        return False
-
     def check_platform(self):
         """ Test whether the platform we're using is supported. """
         if self.this_platform in self.SUPPORTED_PLATFORMS:
@@ -191,7 +198,7 @@ class HMSoftwareInstaller:
 
     def set_up_git(self):
         """ Install Git and set up a personal access token. """
-        install_result = self.install_via_apt("git")
+        install_result = self.install_via_apt(GIT)
         if not install_result:
             return False
         pat_result = \
@@ -235,7 +242,7 @@ class HMSoftwareInstaller:
             wallpaper_filename = "default.jpg"
         wallpaper_path = \
             str(Path(self.path_to_wallpaper_dir)/wallpaper_filename)
-        if self.this_platform == "ubuntu":
+        if self.this_platform == UBUNTU:
             arguments = [
                 "gsettings",
                 "set",
@@ -243,7 +250,7 @@ class HMSoftwareInstaller:
                 "picture-uri",
                 "file:///"+wallpaper_path
             ]
-        elif self.this_platform == "raspbian":
+        elif self.this_platform == RASPIAN:
             arguments = ["pcmanfm", "--set-wallpaper", wallpaper_path]
         else:
             return False
@@ -326,7 +333,7 @@ class HMSoftwareInstaller:
         for package in self.OTHER_THIRD_PARTY:
             if not self.install_via_apt(package):
                 result = False
-        if self.this_platform == "chrome-os":
+        if self.this_platform == CHROME_OS:
             for package in self.MISSING_FROM_CHROME:
                 if not self.install_via_apt(package):
                     result = False
@@ -341,16 +348,25 @@ class HMSoftwareInstaller:
             ["sudo", "echo", "Superuser privileges: activate!"], check=True
         )
 
-    def run_apt_with_argument(self, argument):
+    def run_apt_with_arguments(self, arguments):
         """ Run APT with an argument, and tell me how it went. """
-        arguments = ["sudo", "apt-get", "--yes", argument]
+        arguments = ["sudo", "apt-get", "--yes"]+arguments
         result = self.run_with_indulgence(arguments)
         return result
 
+    def install_via_apt(self, package_name, command=None):
+        """ Attempt to install a package, and tell me how it went. """
+        if not command:
+            command = package_name
+        if check_command_exists(command):
+            return True
+        arguments = ["install", package_name]
+        return self.run_apt_with_arguments(arguments)
+
     def update_and_upgrade(self):
         """ Update and upgrade the existing software. """
-        self.run_apt_with_argument("update")
-        if not self.run_apt_with_argument("upgrade"):
+        self.run_apt_with_arguments(["update"])
+        if not self.run_apt_with_arguments(["upgrade"]):
             return False
         if not self.install_via_apt("software-properties-common"):
             return False
@@ -358,32 +374,33 @@ class HMSoftwareInstaller:
 
     def install_sqlite(self):
         """ Install both SQLite and a browser for it. """
-        if not self.install_via_apt("sqlite"):
-            return False
-        if not self.install_via_apt("sqlitebrowser"):
-            return False
+        for package in ("sqlite", "sqlitebrowser"):
+            if not self.install_via_apt(package):
+                return False
         return True
 
     def run_essentials(self):
         """ Run those processes which, if they fail, we will have to stop
         the entire program there. """
         for item in self.make_essentials():
-            print(item["gerund"]+"...")
-            method_to_run = item["method"]
-            if not method_to_run():
-                self.failure_log.append(item["imperative"])
-                return False
+            if self.include_git or not item[GIT]:
+                print(item[GERUND]+"...")
+                method_to_run = item[METHOD]
+                if not method_to_run():
+                    self.failure_log.append(item[IMPERATIVE])
+                    return False
         return True
 
     def run_non_essentials(self):
         """ Run the installation processes. """
         result = True
         for item in self.make_non_essentials():
-            print(item["gerund"]+"...")
-            method_to_run = item["method"]
-            if not method_to_run():
-                self.failure_log.append(item["imperative"])
-                result = False
+            if self.include_git or not item[GIT]:
+                print(item[GERUND]+"...")
+                method_to_run = item[METHOD]
+                if not method_to_run():
+                    self.failure_log.append(item[IMPERATIVE])
+                    result = False
         print("Changing wallpaper...")
         if not self.change_wallpaper():
             self.failure_log.append("Change wallpaper")

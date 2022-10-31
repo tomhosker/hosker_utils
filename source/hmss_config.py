@@ -30,13 +30,25 @@ DEFAULT_ROYAL_REPOS = (
     "vanilla_web"
 )
 DEFAULT_TARGET_DIR = str(PATH_OBJ_TO_HOME)
-CODE_INDENTATION = 4
-
+DEFAULT_WALLPAPER_FN = "default.jpg"
 # Default paths.
 DEFAULT_PATH_TO_HMSS_CONFIG_FILE = str(PATH_OBJ_TO_HOME/"hmss_config.json")
 DEFAULT_PATH_TO_GIT_CREDENTIALS = str(PATH_OBJ_TO_HOME/".git-credentials")
 DEFAULT_PATH_TO_PAT = str(PATH_OBJ_TO_HOME/"personal_access_token.txt")
 DEFAULT_PATH_TO_WALLPAPER_DIR = str(Path(__file__).parent/"wallpaper")
 
-# Command elements.
+# Operating systems.
+UBUNTU = "ubuntu"
+CHROME_OS = "chrome-os",
+RASPBIAN = "raspian"
+OTHER_DEBIAN = "other-debian"
+
+# Action components.
+IMPERATIVE = "imperative"
+GERUND = "gerund"
+METHOD = "method"
+
+# Misc.
+CODE_INDENTATION = 4
+GIT = "git"
 INTERNAL_PYTHON_COMMAND = "python3"
