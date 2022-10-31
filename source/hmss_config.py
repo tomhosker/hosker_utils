@@ -39,7 +39,7 @@ DEFAULT_PATH_TO_WALLPAPER_DIR = str(Path(__file__).parent/"wallpaper")
 
 # Operating systems.
 UBUNTU = "ubuntu"
-CHROME_OS = "chrome-os",
+CHROME_OS = "chrome-os"
 RASPBIAN = "raspian"
 OTHER_DEBIAN = "other-debian"
 

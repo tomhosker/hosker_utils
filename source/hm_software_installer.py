@@ -240,7 +240,7 @@ class HMSoftwareInstaller:
                 self.WALLPAPER_EXT
             )
         else:
-            wallpaper_filename = "default.jpg"
+            wallpaper_filename = DEFAULT_WALLPAPER_FN
         wallpaper_path = \
             str(Path(self.path_to_wallpaper_dir)/wallpaper_filename)
         if self.this_platform == UBUNTU:
@@ -251,7 +251,7 @@ class HMSoftwareInstaller:
                 "picture-uri",
                 "file:///"+wallpaper_path
             ]
-        elif self.this_platform == RASPIAN:
+        elif self.this_platform == RASPBIAN:
             arguments = ["pcmanfm", "--set-wallpaper", wallpaper_path]
         else:
             return False
@@ -371,13 +371,6 @@ class HMSoftwareInstaller:
             return False
         if not self.install_via_apt("software-properties-common"):
             return False
-        return True
-
-    def install_sqlite(self):
-        """ Install both SQLite and a browser for it. """
-        for package in ("sqlite", "sqlitebrowser"):
-            if not self.install_via_apt(package):
-                return False
         return True
 
     def run_essentials(self):
