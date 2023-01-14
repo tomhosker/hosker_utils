@@ -492,3 +492,9 @@ def back_up_royal_repos(path_to_config_file=DEFAULT_PATH_TO_HMSS_CONFIG_FILE):
     installer_obj = make_installer_obj_from_configs(path_to_config_file)
     if installer_obj:
         installer_obj.back_up_royal_repos()
+
+def refresh_token(path_to_config_file=DEFAULT_PATH_TO_HMSS_CONFIG_FILE):
+    """ Refresh the personal access token used to authenticate Git commands. """
+    installer_obj = make_installer_obj_from_configs(path_to_config_file)
+    if installer_obj:
+        installer_obj.set_up_git()

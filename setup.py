@@ -12,7 +12,11 @@ DESCRIPTION = "General utility functions"
 GIT_URL_STEM = "https://github.com/tomhosker"
 AUTHOR = "Tom Hosker"
 AUTHOR_EMAIL = "tomdothosker@gmail.com"
-SCRIPT_PATHS = ("scripts/install-hmss", "scripts/back-up-royal-repos")
+SCRIPT_PATHS = (
+    "scripts/install-hmss",
+    "scripts/back-up-royal-repos",
+    "scripts/refresh-token"
+)
 INSTALL_REQUIRES = (
     "pylint>=2.12.2", "pytest>=7.1.2", "pytest-cov", "termcolor"
 )
