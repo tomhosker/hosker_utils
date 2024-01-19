@@ -7,7 +7,7 @@ from setuptools import setup
 
 # Local constants.
 PACKAGE_NAME = "hosker_utils"
-VERSION = "2.5.3"
+VERSION = "2.5.4"
 DESCRIPTION = "General utility functions"
 GIT_URL_STEM = "https://github.com/tomhosker"
 AUTHOR = "Tom Hosker"
@@ -18,7 +18,10 @@ SCRIPT_PATHS = (
     "scripts/refresh-token"
 )
 INSTALL_REQUIRES = (
-    "pylint>=2.12.2", "pytest>=7.1.2", "pytest-cov", "termcolor"
+    "pylint>=2.12.2",
+    "pytest>=7.1.2",
+    "pytest-cov",
+    "termcolor"
 )
 INCLUDE_PACKAGE_DATA = True
 
