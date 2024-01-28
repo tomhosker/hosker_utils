@@ -4,10 +4,8 @@ required on this computer.
 """
 
 # Standard imports.
-import contextlib
 import json
 import logging
-import os
 import shutil
 import subprocess
 import urllib.parse
@@ -90,7 +88,6 @@ class HMSoftwareInstaller:
     EXPECTED_PATH_TO_GOOGLE_CHROME_COMMAND: ClassVar[str] = \
         "/usr/bin/google-chrome"
     GIT_CLONE: ClassVar[tuple] = (GIT, "clone")
-    GIT_FETCH: ClassVar[tuple] = (GIT, "fetch")
     GIT_LOG_FILENAME: ClassVar[str] = "hm_git.log"
     GIT_LOG_FORMAT: ClassVar[str] = "%(asctime)s | %(levelname)s | %(message)s"
     GIT_PULL: ClassVar[tuple] = (GIT, "pull", "origin", DEFAULT_BRANCH_NAME)
@@ -226,7 +223,7 @@ class HMSoftwareInstaller:
             return False
         if not self.install_via_apt(chrome_deb_path):
             return False
-        os.remove(chrome_deb_path)
+        Path(chrome_deb_path).unlink()
         return True
 
     def change_wallpaper(self):
@@ -266,14 +263,19 @@ class HMSoftwareInstaller:
 
     def clone_repo(self, repo_name):
         """ Clone a given repo. """
-        with change_working_directory(self.target_dir):
-            if Path(repo_name).exists():
-                warnings.warn("Looks like "+repo_name+" already exists...")
-                return True
-            arguments = list(self.GIT_CLONE)+[self.make_git_url(repo_name)]
-            if not self.run_with_indulgence(arguments):
-                self.git_logger.error("Problem cloning repo: %s", repo_name)
-                return False
+        path_obj_to_local_repo = Path(self.target_dir)/repo_name
+        path_to_local_repo = str(path_obj_to_local_repo)
+        if path_obj_to_local_repo:
+            warnings.warn("Looks like "+repo_name+" already exists...")
+            return True
+        arguments = [
+            self.GIT_CLONE,
+            self.make_git_url(repo_name),
+            path_to_local_repo
+        ]
+        if not self.run_with_indulgence(arguments):
+            self.git_logger.error("Problem cloning repo: %s", repo_name)
+            return False
         return True
 
     def clone_royal_repos(self):
@@ -286,24 +288,25 @@ class HMSoftwareInstaller:
 
     def back_up_repo(self, repo_name):
         """ Back up a given repo on THIS device. """
-        with change_working_directory(self.target_dir):
-            if not (Path(repo_name).exists() or self.clone_repo(repo_name)):
-                return False
-            with change_working_directory(repo_name):
-                if not self.run_with_indulgence(self.GIT_FETCH):
-                    self.git_logger.error(
-                        "Problem calling %s for repo: %s",
-                        " ".join(self.GIT_FETCH),
-                        repo_name
-                    )
-                    return False
-                if not self.run_with_indulgence(self.GIT_PULL):
-                    self.git_logger.error(
-                        "Problem calling %s for repo: %s",
-                        " ".join(self.GIT_PULL),
-                        repo_name
-                    )
-                    return False
+        path_obj_to_local_repo = Path(self.target_dir)/repo_name
+        path_to_local_repo = str(path_obj_to_local_repo)
+        if not (path_obj_to_local_repo.exists() or self.clone(repo_name)):
+            return False
+        arguments_stem = [GIT, "-C", path_to_local_repo]
+        fetch_arguments = arguments_stem+["fetch"]
+        pull_arguments = arguments_stem+["pull"]
+        if not self.run_with_indulgence(fetch_arguments):
+            self.git_logger.error(
+                "Problem calling: %s", fetch_arguments
+            )
+            return False
+        if not self.run_with_indulgence(pull_arguments):
+            self.git_logger.error(
+                "Problem calling %s for repo: %s",
+                pull_arguments,
+                repo_name
+            )
+            return False
         return True
 
     def back_up_royal_repos(self):
@@ -434,16 +437,6 @@ class HMSoftwareInstaller:
 ####################
 # HELPER FUNCTIONS #
 ####################
-
-@contextlib.contextmanager
-def change_working_directory(path):
-    """ Changes working directory and returns to previous on exit. """
-    prev_cwd = Path.cwd()
-    os.chdir(path)
-    try:
-        yield
-    finally:
-        os.chdir(prev_cwd)
 
 def check_command_exists(command):
     """ Check whether a given command exists on this computer. """

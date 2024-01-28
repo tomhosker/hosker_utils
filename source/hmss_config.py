@@ -20,13 +20,14 @@ DEFAULT_GIT_USERNAME = "tomhosker"
 DEFAULT_PLATFORM = "ubuntu"
 DEFAULT_PYTHON_VERSION = 3
 DEFAULT_ROYAL_REPOS = (
+    "celanta_at_the_well_of_life",
     "chancery",
     "chancery_b",
     "hgmj",
     "hoskers_almanack",
     "hosker_utils",
-    "kingdom_of_cyprus",
     "lucifer_in_starlight",
+    "reading_room",
     "vanilla_web"
 )
 DEFAULT_TARGET_DIR = str(PATH_OBJ_TO_HOME)
