@@ -1,2 +1,3 @@
 recursive-include source/backup_configs *
+recursive-include source/sh *
 recursive-include source/wallpaper *
