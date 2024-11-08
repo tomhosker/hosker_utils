@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+"""
+This script inserts a string into .bashrc which causes the so-called royal
+repos to be backed up every time that the shell is opened.
+"""
+
+# Standard imports.
+from pathlib import Path
+
+# Local constants.
+BASHRC_ADDITION = "back-up-royal-repos &>/dev/null & disown"
+PATH_TO_BASHRC = str(Path.home()/".bashrc")
+
+###################
+# RUN AND WRAP UP #
+###################
+
+def addition_already_added() -> bool:
+    """ Decide whether the addition is there already. """
+    result = False
+    with open(PATH_TO_BASHRC, "r") as bashrc:
+        if BASHRC_ADDITION in bashrc.read():
+            result = True
+    return result
+
+def run():
+    """ Run this script. """
+    if addition_already_added():
+        print("Looks like the bashrc addition is there already.")
+        return
+    with open(PATH_TO_BASHRC, "a") as bashrc:
+        bashrc.write(BASHRC_ADDITION)
+
+if __name__ == "__main__":
+    run()

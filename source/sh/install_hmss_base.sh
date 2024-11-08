@@ -69,9 +69,12 @@ for repo_name in $ROYAL_REPOS; do
     if [ -d $repo_name ]; then
         echo "${COLOUR}Looks like we've already got $repo_name..."
     else
-        git clone $git_url_stem/$repo_name
+        git clone "$git_url_stem/$repo_name"
     fi
 done
+if [ ! -z "$ROYAL_REPOS" ]; then
+    schedule-back-up-royal-repos
+fi
 
 # Change wallpaper.
 gsettings set org.gnome.desktop.background picture-uri file:///$PATH_TO_WP

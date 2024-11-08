@@ -13,7 +13,7 @@ from hosker_utils.hm_software_installer import install_hmss
 
 def run():
     """ Run this file. """
-    install_hmss()
+    install_hmss(human_interface=True)
 
 if __name__ == "__main__":
     run()
