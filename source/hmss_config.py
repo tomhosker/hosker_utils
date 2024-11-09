@@ -15,9 +15,9 @@ DEFAULT_CLONE_METHOD = "https"
 DEFAULT_GIT_HOST = "github.com"
 JSON_INDENT = 4
 # Lists.
-DEFAULT_ESSENTIAL_APT_PACKAGES = ("git", "gedit-plugins")
-DEFAULT_NON_ESSENTIAL_APT_PACKAGES = ("inkscape", "vlc")
-DEFAULT_ROYAL_REPOS = (
+DEFAULT_ESSENTIAL_APT_PACKAGES = ["git", "gedit-plugins"]
+DEFAULT_NON_ESSENTIAL_APT_PACKAGES = ["inkscape", "vlc"]
+DEFAULT_ROYAL_REPOS = [
     "celanta_at_the_well_of_life",
     "chancery",
     "chancery_b",
@@ -27,7 +27,7 @@ DEFAULT_ROYAL_REPOS = (
     "lucifer_in_starlight",
     "reading_room",
     "vanilla_web"
-)
+]
 # Paths.
 PATH_OBJ_TO_HERE = Path(__file__).parent
 PATH_TO_DEFAULT_WALLPAPER_DIR = str(PATH_OBJ_TO_HERE/"wallpaper")

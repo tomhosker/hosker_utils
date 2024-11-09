@@ -21,11 +21,12 @@ LOG_FORMAT = "%(asctime)s | %(levelname)s | %(message)s"
 
 def back_up_royal_repos(*args, **kwargs) -> bool:
     """ Compress the class into a function. """
-    backup_obj = RoyalRepoBackup(*args, **kwargs)
+    backup_obj = RoyalReposBackup(*args, **kwargs)
     return backup_obj.back_up_all()
 
 @dataclass
-class RoyalRepoBackup:
+class RoyalReposBackup:
+    """ The class in question. """
     human_interface: bool = False
     config: HMSSConfig = None
     logger: logging.Logger = field(init=False, default=None)
@@ -65,7 +66,7 @@ class RoyalRepoBackup:
         """ Run a given Git command in a given Git directory. """
         try:
             subprocess.run(["git", command], check=True, cwd=git_directory)
-        except CalledProcessError as exc:
+        except subprocess.CalledProcessError as exc:
             self.logger.error(
                 "Non-zero exit code running git %s within %s: %s",
                 command,

@@ -1,18 +1,18 @@
 """
-This code tests some of the local utility functions.
+This code tests some of the miscellaneous functions.
 """
 
 # Standard imports.
 from unittest.mock import patch
 
 # Source imports.
-from source.local_utils import get_yes_no
+from source.misc import get_yes_no
 
 ###########
 # TESTING #
 ###########
 
-@patch("source.local_utils.input")
+@patch("source.misc.input")
 def test_get_yes_no(input_mock):
     """ Test that "y" returns True and "n" returns False. """
     input_mock.return_value = "y"

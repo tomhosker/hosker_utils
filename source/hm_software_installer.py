@@ -4,7 +4,6 @@ required on this computer.
 """
 
 # Standard imports.
-import json
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -108,10 +107,9 @@ def sh_bool(py_bool: bool) -> str:
     """ Convert a Python boolean to its Shell Script equivalent. """
     if py_bool is True:
         return "true"
-    elif py_bool is False:
+    if py_bool is False:
         return "false"
-    else:
-        raise HMSSError(f"Not a boolean: {py_bool}")
+    raise HMSSError(f"Not a boolean: {py_bool}")
 
 def sh_list(py_list: list|None) -> str:
     """ Convert a Python list to its Shell Script equivalent. """

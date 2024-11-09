@@ -25,18 +25,18 @@ PIP_INSTALL_THIS = ("pip", "install", ".")
 # FUNCTIONS #
 #############
 
-def print_encased(message, symbol="#", print_color=None):
+def print_encased(message, symbol="#", colour=None):
     """ Print the message encased in hashes. """
     message_line = symbol+" "+message+" "+symbol
     hashes = ""
     for _ in range(len(message_line)):
         hashes = hashes+symbol
-    if print_color:
-        print(colored(" ", print_color))
-        print(colored(hashes, print_color))
-        print(colored(message_line, print_color))
-        print(colored(hashes, print_color))
-        print(colored(" ", print_color))
+    if colour:
+        print(colored(" ", colour))
+        print(colored(hashes, colour))
+        print(colored(message_line, colour))
+        print(colored(hashes, colour))
+        print(colored(" ", colour))
     else:
         print(" ")
         print(hashes)
@@ -90,7 +90,7 @@ def run_continuous_integration(lint=True, test=True, stop_on_failure=False):
             lint=lint, test=test, stop_on_failure=stop_on_failure
         )
     if result:
-        print_encased("Continuous integration: PASS", print_color="green")
+        print_encased("Continuous integration: PASS", colour="green")
     else:
-        print_encased("Continuous integration: FAIL", print_color="red")
+        print_encased("Continuous integration: FAIL", colour="red")
     return result
