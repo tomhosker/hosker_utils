@@ -5,64 +5,63 @@ This code defines a function which installs a given list of PIP packages.
 # Standard imports.
 import subprocess
 
-# Local constants.
-DEFAULT_INTERNAL_PIP_COMMAND = "pip3"
-
 #############
 # FUNCTIONS #
 #############
 
-def install_dependency(
-        package_string, internal_pip_command=DEFAULT_INTERNAL_PIP_COMMAND
-    ):
-    """ Install a PIP package from a given package string, e.g. "pytest",
-    "pylint>=2.12.2", etc. """
+def install_dependency(package: str) -> bool:
+    """
+    Install a PIP package from a given package string, e.g. "pytest",
+    "pylint>=2.12.2", etc.
+    """
     try:
-        subprocess.run(
-            [internal_pip_command, "install", package_string], check=True
-        )
+        subprocess.run(["pip", "install", package], check=True)
     except subprocess.CalledProcessError:
         return False
     return True
 
-def install_dependencies(
-        package_list, internal_pip_command=DEFAULT_INTERNAL_PIP_COMMAND
-    ):
+def install_dependencies(packages: list[str]) -> bool:
     """ As above, but for several packages. """
-    for package_string in package_list:
+    for package in packages:
         local_result = \
-            install_dependency(
-                package_string, internal_pip_command=internal_pip_command
-            )
+            install_dependency(package)
         if not local_result:
             return False
     return True
 
-def install_apt_package(package_string, raise_error=True, quiet=False):
+def install_apt_package(
+    package: str,
+    yes: bool = True,
+    raise_error: bool = True,
+    quiet: bool = False
+) -> bool:
     """ Obviously, this will only work in a Debian-based system. """
+    args = ["sudo", "apt-get", "install"]
+    if yes:
+        args += ["--yes"]
+    args += [package]
     if not quiet:
-        print(
-            "I'm going to need superuser privileges to install "+
-            package_string+
-            "..."
-        )
+        print(f"I'm going to need superuser privileges to install {package}")
     try:
-        subprocess.run(
-            ["sudo", "apt-get", "install", package_string], check=True
-        )
+        subprocess.run(args, check=True)
     except subprocess.CalledProcessError:
         if raise_error:
             raise
         return False
     return True
 
-def install_apt_packages(package_strings, raise_error=True, quiet=False):
+def install_apt_packages(
+    packages: list[str],
+    quiet: bool = False,
+    **kwargs
+) -> bool:
     """ An iterative version of the above. """
     if not quiet:
         print(
-            "I'm going to need superuser privileges to install "+
-            str(package_strings)+
-            "..."
+            "I'm going to need superuser privileges to install %s"
+            % ", ".join(packages)
         )
-    for package_string in package_strings:
-        install_apt_package(package_string, raise_error=raise_error, quiet=True)
+    for package in packages:
+        if not install_apt_package(package, quiet=False, **kwargs):
+            return False
+    return True

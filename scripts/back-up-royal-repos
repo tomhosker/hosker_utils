@@ -5,7 +5,7 @@ This code defines a script which backs up the royal repos.
 """
 
 # Bespoke imports.
-from hosker_utils.hm_software_installer import back_up_royal_repos
+from hosker_utils.royal_repos_backup import back_up_royal_repos
 
 ###################
 # RUN AND WRAP UP #
