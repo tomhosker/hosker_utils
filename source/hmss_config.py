@@ -11,7 +11,7 @@ from typing import Self
 
 # Local constants.
 DEFAULT_GIT_ACCOUNT_NAME = "tomhosker"
-DEFAULT_CLONE_METHOD = "https"
+DEFAULT_CLONE_METHOD = "ssh"
 DEFAULT_GIT_HOST = "github.com"
 JSON_INDENT = 4
 # Lists.

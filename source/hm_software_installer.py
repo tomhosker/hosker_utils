@@ -98,9 +98,7 @@ class HMSoftwareInstaller:
         )
 
     def _get_git_url_stem(self) -> str | None:
-        """Build the Git URL stem from config."""
-        if self.config.clone_method == "https":
-            return f"https://{self.config.git_host}/{self.config.git_account_name}"
+        """Build the SSH Git URL stem from config."""
         if self.config.clone_method == "ssh":
             return f"git@{self.config.git_host}:{self.config.git_account_name}"
         print(f"Bad CLONE_METHOD: {self.config.clone_method}")
