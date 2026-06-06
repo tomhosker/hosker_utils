@@ -16,7 +16,7 @@ PACKAGE_VERSION = "2.6.1"
 PACKAGE_ARCHITECTURE = "all"
 PACKAGE_MAINTAINER = "Tom Hosker <tomdothosker@gmail.com>"
 PACKAGE_DESCRIPTION = "General utility functions for Hosker projects"
-PACKAGE_DEPENDS = "python3, git, libglib2.0-bin"
+PACKAGE_DEPENDS = "python3, python3-pytest, python3-termcolor, git, libglib2.0-bin"
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SOURCE_DIR = REPO_ROOT / "source"
@@ -29,6 +29,7 @@ INSTALL_SCRIPTS = (
 )
 RUNTIME_MODULES = (
     "__init__.py",
+    "continuous_integration.py",
     "hm_software_installer.py",
     "hmss_config.py",
     "install_dependencies.py",
