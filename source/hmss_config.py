@@ -11,7 +11,6 @@ from typing import Self
 
 # Local constants.
 DEFAULT_GIT_ACCOUNT_NAME = "tomhosker"
-DEFAULT_CLONE_METHOD = "ssh"
 DEFAULT_GIT_HOST = "github.com"
 JSON_INDENT = 4
 # Lists.
@@ -40,7 +39,6 @@ DEFAULT_HMSS_CONFIG = {
     "path_to_wallpaper_file": None,
     "install_chrome": False,
     "royal_repos": DEFAULT_ROYAL_REPOS,
-    "clone_method": DEFAULT_CLONE_METHOD,
     "git_host": DEFAULT_GIT_HOST,
     "git_account_name": DEFAULT_GIT_ACCOUNT_NAME
 }
@@ -58,7 +56,6 @@ class HMSSConfig:
     path_to_wallpaper_file: str|None = None
     install_chrome: bool|None = False
     royal_repos: list[str]|None = None
-    clone_method: str|None = None
     git_host: str|None = None
     git_account_name: str|None = None
 
@@ -80,6 +77,7 @@ class HMSSConfig:
         """ Create an instance of this class by reading the config file. """
         with open(PATH_TO_HMSS_CONFIG, "r") as config_file:
             init_dict = json.load(config_file)
+        init_dict.pop("clone_method", None)
         result = cls(**init_dict)
         return result
 
