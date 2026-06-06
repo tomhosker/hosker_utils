@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+"""
+Build a minimal Debian package for this project.
+"""
+
+from __future__ import annotations
+
+import argparse
+import shutil
+import subprocess
+import tempfile
+from pathlib import Path
+
+PACKAGE_NAME = "hosker-utils"
+PACKAGE_VERSION = "2.6.1"
+PACKAGE_ARCHITECTURE = "all"
+PACKAGE_MAINTAINER = "Tom Hosker <tomdothosker@gmail.com>"
+PACKAGE_DESCRIPTION = "General utility functions for Hosker projects"
+PACKAGE_DEPENDS = "python3, git, libglib2.0-bin"
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+SOURCE_DIR = REPO_ROOT / "source"
+SCRIPTS_DIR = REPO_ROOT / "scripts"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "dist"
+INSTALL_SCRIPTS = (
+    "back-up-royal-repos",
+    "install-hmss",
+    "schedule-back-up-royal-repos",
+)
+RUNTIME_MODULES = (
+    "__init__.py",
+    "hm_software_installer.py",
+    "hmss_config.py",
+    "install_dependencies.py",
+    "misc.py",
+    "royal_repos_backup.py",
+)
+RUNTIME_DATA_DIRS = (
+    "backup_configs",
+    "wallpaper",
+)
+
+
+def build_control_file(debian_dir: Path) -> None:
+    """Write the package control metadata."""
+    control_text = "\n".join(
+        [
+            f"Package: {PACKAGE_NAME}",
+            f"Version: {PACKAGE_VERSION}",
+            "Section: utils",
+            "Priority: optional",
+            f"Architecture: {PACKAGE_ARCHITECTURE}",
+            f"Maintainer: {PACKAGE_MAINTAINER}",
+            f"Depends: {PACKAGE_DEPENDS}",
+            f"Description: {PACKAGE_DESCRIPTION}",
+            "",
+        ]
+    )
+    (debian_dir / "control").write_text(control_text, encoding="utf-8")
+
+
+def copy_runtime_files(package_root: Path) -> None:
+    """Copy the Python package and command-line entry points."""
+    python_package_root = package_root / "usr" / "lib" / "python3" / "dist-packages" / "hosker_utils"
+    bin_root = package_root / "usr" / "bin"
+    python_package_root.parent.mkdir(parents=True, exist_ok=True)
+    bin_root.mkdir(parents=True, exist_ok=True)
+
+    python_package_root.mkdir(parents=True)
+    for module_name in RUNTIME_MODULES:
+        shutil.copy2(SOURCE_DIR / module_name, python_package_root / module_name)
+    for dir_name in RUNTIME_DATA_DIRS:
+        shutil.copytree(SOURCE_DIR / dir_name, python_package_root / dir_name)
+
+    for script_name in INSTALL_SCRIPTS:
+        source_script = SCRIPTS_DIR / script_name
+        destination_script = bin_root / script_name
+        shutil.copy2(source_script, destination_script)
+        destination_script.chmod(0o755)
+
+
+def build_deb(output_dir: Path) -> Path:
+    """Build the .deb file and return its path."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{PACKAGE_NAME}_{PACKAGE_VERSION}_{PACKAGE_ARCHITECTURE}.deb"
+
+    with tempfile.TemporaryDirectory() as temp_dir_name:
+        package_root = Path(temp_dir_name) / PACKAGE_NAME
+        debian_dir = package_root / "DEBIAN"
+        debian_dir.mkdir(parents=True)
+
+        build_control_file(debian_dir)
+        copy_runtime_files(package_root)
+
+        subprocess.run(
+            ["dpkg-deb", "--build", "--root-owner-group", str(package_root), str(output_path)],
+            check=True,
+        )
+
+    return output_path
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=DEFAULT_OUTPUT_DIR,
+        help="Directory to write the .deb file into.",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    """Build the package and print the output path."""
+    args = parse_args()
+    output_path = build_deb(args.output_dir)
+    print(output_path)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
