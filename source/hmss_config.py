@@ -20,12 +20,9 @@ DEFAULT_ROYAL_REPOS = [
     "celanta_at_the_well_of_life",
     "chancery",
     "chancery_b",
-    "hgmj",
     "hoskers_almanack",
     "hosker_utils",
-    "lucifer_in_starlight",
-    "reading_room",
-    "vanilla_web"
+    "reading_room"
 ]
 # Paths.
 PATH_OBJ_TO_HERE = Path(__file__).parent
