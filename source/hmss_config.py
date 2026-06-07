@@ -94,7 +94,7 @@ class HMSSConfig:
             print(f"I'll create one for you now at {PATH_TO_HMSS_CONFIG}")
             cls.write_defaults()
             print("Presently, all configs are set to their default values.")
-            print("Open the file, amened as required, and then run me again.")
+            print("Open the file, amend as required, and then run me again.")
             return None
         try:
             result = cls.read()
