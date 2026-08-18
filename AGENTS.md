@@ -24,7 +24,7 @@ These instructions apply to the entire repository.
 ## Python conventions
 
 - Support Python 3.11 and newer.
-- Follow the existing style and the repository's `pylintrc`.
+- Follow the existing style and the repository's `ruff.toml`.
 - Add type hints to new or changed public functions where practical.
 - Use `pathlib.Path` for filesystem paths and specify UTF-8 when opening text
   files.
@@ -37,6 +37,7 @@ These instructions apply to the entire repository.
 - Tests must not write to the user's home directory, invoke `sudo`, access the
   network, or modify real Git repositories. Use temporary paths and mocks.
 - Run `python3 -m pytest` after Python changes.
+- Run `python3 -m ruff check .` after Python changes.
 - Run `python3 validate.py` when a change affects linted Python code, provided
   it can run safely in the current environment.
 - Run `git diff --check` before handing work back.

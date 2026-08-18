@@ -78,7 +78,7 @@ class HMSSConfig:
     @classmethod
     def read(cls) -> Self:
         """ Create an instance of this class by reading the config file. """
-        with open(PATH_TO_HMSS_CONFIG, "r") as config_file:
+        with open(PATH_TO_HMSS_CONFIG, encoding="utf-8") as config_file:
             init_dict = json.load(config_file)
         result = cls(**init_dict)
         return result
@@ -96,7 +96,7 @@ class HMSSConfig:
             print(f"I'll create one for you now at {PATH_TO_HMSS_CONFIG}")
             cls.write_defaults()
             print("Presently, all configs are set to their default values.")
-            print("Open the file, amened as required, and then run me again.")
+            print("Open the file, amend as required, and then run me again.")
             return None
         try:
             result = cls.read()
@@ -112,5 +112,7 @@ class HMSSConfig:
     def write_defaults(overwrite: bool = False):
         """ Create the config file, as necessary. """
         if overwrite or not Path(PATH_TO_HMSS_CONFIG).exists():
-            with open(PATH_TO_HMSS_CONFIG, "w") as config_file:
+            with open(
+                PATH_TO_HMSS_CONFIG, "w", encoding="utf-8"
+            ) as config_file:
                 json.dump(DEFAULT_HMSS_CONFIG, config_file, indent=JSON_INDENT)
