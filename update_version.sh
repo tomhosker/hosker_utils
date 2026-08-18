@@ -1,21 +1,24 @@
 #!/bin/sh
 
-# Local constants.
-PACKAGE_NAME="hosker_utils"
+# Crash on errors and unset variables.
+set -eu
 
-# Crash on the first error.
-set -e
+RELEASE_ENV=".venv-release"
+RELEASE_PYTHON="$RELEASE_ENV/bin/python"
+RELEASE_OUTPUT_DIR="dist/python"
 
-# Check/install twine.
-echo "I'm going to need superuser privileges to check/install twine..."
-sudo apt install --yes twine
-
-# Let's get cracking...
-rm -rf build dist "$PACKAGE_NAME.egg-info"
-python3 setup.py check
-python3 setup.py sdist
-python3 setup.py bdist_wheel
-#twine upload --repository-url https://test.pypi.org/legacy/ dist/* # This is for uploading to test.pypi.
-if ! twine upload dist/* --verbose; then
-    echo "Note to future Tom: Did you update the version number in setup.py?"
+# Keep release tooling isolated from both the system Python and the package's
+# runtime environment.
+if [ ! -x "$RELEASE_PYTHON" ]; then
+    python3 -m venv "$RELEASE_ENV"
 fi
+"$RELEASE_PYTHON" -m pip install --upgrade build twine
+
+# Build and validate release artifacts. Publishing is deliberately separate so
+# running this script cannot upload a package by accident.
+rm -rf "$RELEASE_OUTPUT_DIR"
+"$RELEASE_PYTHON" -m build --outdir "$RELEASE_OUTPUT_DIR"
+"$RELEASE_PYTHON" -m twine check "$RELEASE_OUTPUT_DIR"/*
+
+echo "Python artifacts are ready in $RELEASE_OUTPUT_DIR/."
+echo "Publish with: $RELEASE_PYTHON -m twine upload $RELEASE_OUTPUT_DIR/*"

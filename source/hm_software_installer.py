@@ -40,7 +40,7 @@ class HMSoftwareInstaller:
 
     def _write_install_script(self):
         """ Read the base file; make the replacements; write the new file. """
-        with open(PATH_TO_INSTALL_SCRIPT_BASE, "r") as base_file:
+        with open(PATH_TO_INSTALL_SCRIPT_BASE) as base_file:
             script = base_file.read()
         replacements = (
             (
@@ -78,7 +78,7 @@ class HMSoftwareInstaller:
         """ Ronseal. """
         try:
             subprocess.run(["sh", PATH_TO_INSTALL_SCRIPT_TEMP], check=True)
-        except subprocess.CalledProcessError:
+        except (OSError, subprocess.CalledProcessError):
             return False
         return True
 
@@ -91,10 +91,10 @@ class HMSoftwareInstaller:
         if not self.config:
             return False
         self._write_install_script()
-        if self._run_install_script():
+        try:
+            return self._run_install_script()
+        finally:
             self._clean()
-            return True
-        return False
 
 ################################
 # HELPER CLASSES AND FUNCTIONS #

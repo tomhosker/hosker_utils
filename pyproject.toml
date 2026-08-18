@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hosker_utils"
+version = "2.7.0"
+description = "General utility functions and HMSS command-line tools"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Tom Hosker", email = "tomdothosker@gmail.com" },
+]
+dependencies = [
+    "pytest>=7.1.2",
+    "pytest-cov",
+    "ruff>=0.5.0",
+    "termcolor",
+]
+
+[project.urls]
+Repository = "https://github.com/tomhosker/hosker_utils"
+Changelog = "https://github.com/tomhosker/hosker_utils/blob/master/CHANGELOG.md"
+
+[project.scripts]
+back-up-royal-repos = "hosker_utils.cli:back_up_royal_repos_cli"
+install-hmss = "hosker_utils.cli:install_hmss_cli"
+schedule-back-up-royal-repos = "hosker_utils.cli:schedule_backup_cli"
+
+[tool.setuptools]
+packages = ["hosker_utils"]
+package-dir = { hosker_utils = "source" }
+include-package-data = false
+
+[tool.setuptools.package-data]
+hosker_utils = [
+    "backup_configs/*",
+    "sh/*",
+    "wallpaper/*",
+    "wallpaper/thunderbird_infographics/*",
+]
+
+[tool.hosker-utils.deb]
+package-name = "hosker-utils"
+section = "utils"
+priority = "optional"
+depends = [
+    "python3 (>= 3.11)",
+    "python3-pytest",
+    "python3-pytest-cov",
+    "python3-termcolor",
+    "git",
+    "libglib2.0-bin",
+]

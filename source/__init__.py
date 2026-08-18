@@ -8,9 +8,20 @@ through the modules in which they are defined.
 from .continuous_integration import run_continuous_integration
 from .hm_software_installer import HMSoftwareInstaller, install_hmss
 from .install_dependencies import (
-    install_dependency,
-    install_dependencies,
     install_apt_package,
-    install_apt_packages
+    install_apt_packages,
+    install_dependencies,
+    install_dependency,
 )
 from .misc import get_yes_no
+
+__all__ = [
+    "HMSoftwareInstaller",
+    "get_yes_no",
+    "install_apt_package",
+    "install_apt_packages",
+    "install_dependencies",
+    "install_dependency",
+    "install_hmss",
+    "run_continuous_integration",
+]

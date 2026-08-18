@@ -3,26 +3,21 @@ This code tests the HMSSConfig class.
 """
 
 # Standard imports.
-from pathlib import Path
 from unittest.mock import patch
 
 # Source imports.
-from source.hmss_config import HMSSConfig, DEFAULT_HMSS_CONFIG
-
-# Local constants.
-TEST_PATH_TO_HMSS_CONFIG = "test_hmss_config.json"
+from source.hmss_config import DEFAULT_HMSS_CONFIG, HMSSConfig
 
 ###########
 # TESTING #
 ###########
 
-@patch("source.hmss_config.PATH_TO_HMSS_CONFIG", TEST_PATH_TO_HMSS_CONFIG)
-def test_hmss_config():
+def test_hmss_config(tmp_path):
     """ Test that the class works as intended. """
-    Path(TEST_PATH_TO_HMSS_CONFIG).unlink(missing_ok=True)
-    assert HMSSConfig.read_human() == None
-    config_obj = HMSSConfig.read_machine()
-    for key, value in DEFAULT_HMSS_CONFIG.items():
-        if key != "path_to_wallpaper_file":
-            assert value == getattr(config_obj, key)
-    Path(TEST_PATH_TO_HMSS_CONFIG).unlink()
+    config_path = tmp_path/"hmss_config.json"
+    with patch("source.hmss_config.PATH_TO_HMSS_CONFIG", str(config_path)):
+        assert HMSSConfig.read_human() is None
+        config_obj = HMSSConfig.read_machine()
+        for key, value in DEFAULT_HMSS_CONFIG.items():
+            if key != "path_to_wallpaper_file":
+                assert value == getattr(config_obj, key)

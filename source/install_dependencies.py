@@ -12,11 +12,11 @@ import subprocess
 def install_dependency(package: str) -> bool:
     """
     Install a PIP package from a given package string, e.g. "pytest",
-    "pylint>=2.12.2", etc.
+    "ruff>=0.5.0", etc.
     """
     try:
         subprocess.run(["pip", "install", package], check=True)
-    except subprocess.CalledProcessError:
+    except (OSError, subprocess.CalledProcessError):
         return False
     return True
 
@@ -44,7 +44,7 @@ def install_apt_package(
         print(f"I'm going to need superuser privileges to install {package}")
     try:
         subprocess.run(args, check=True)
-    except subprocess.CalledProcessError:
+    except (OSError, subprocess.CalledProcessError):
         if raise_error:
             raise
         return False
@@ -58,10 +58,10 @@ def install_apt_packages(
     """ An iterative version of the above. """
     if not quiet:
         print(
-            "I'm going to need superuser privileges to install %s"
-            % ", ".join(packages)
+            "I'm going to need superuser privileges to install "
+            f"{', '.join(packages)}"
         )
     for package in packages:
-        if not install_apt_package(package, quiet=False, **kwargs):
+        if not install_apt_package(package, quiet=True, **kwargs):
             return False
     return True

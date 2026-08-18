@@ -6,20 +6,20 @@ integration routine.
 # Standard imports.
 import shutil
 import subprocess
-from glob import glob
+import sys
 from pathlib import Path
 
 # Non-standard imports.
-import pytest
 from termcolor import colored
 
-DEFAULT_PATH_TO_LINTER_RC = "pylintrc"
+DEFAULT_PATH_TO_LINTER_RC = "ruff.toml"
 PATH_TO_BACKUP_LINTER_RC = \
-    str(Path(__file__).parent/"backup_configs"/"backup_pylintrc")
+    str(Path(__file__).parent/"backup_configs"/"backup_ruff.toml")
 DEFAULT_PATH_TO_TEST_INI = "pytest.ini"
 PATH_TO_BACKUP_TEST_INI = \
     str(Path(__file__).parent/"backup_configs"/"backup_pytest.ini")
 PIP_INSTALL_THIS = ("pip", "install", ".")
+BUNDLED_RUFF_PATH = Path("/usr/lib/hosker-utils/ruff")
 
 #############
 # FUNCTIONS #
@@ -43,25 +43,43 @@ def print_encased(message, symbol="#", colour=None):
         print(message_line)
         print(hashes)
         print(" ")
+    sys.stdout.flush()
 
 def run_tests(path_to_test_ini=DEFAULT_PATH_TO_TEST_INI):
     """ Run PyTest. """
     if not Path(path_to_test_ini).exists():
         shutil.copy(PATH_TO_BACKUP_TEST_INI, path_to_test_ini)
-    return_code = pytest.main()
-    if return_code == 0:
-        return True
-    return False
+    try:
+        subprocess.run(
+            [sys.executable, "-m", "pytest", "-c", path_to_test_ini],
+            check=True
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return False
+    return True
 
 def run_linter(path_to_linter_rc=DEFAULT_PATH_TO_LINTER_RC):
-    """ Run PyLint on this repo. """
+    """Run Ruff on this repo."""
     if not Path(path_to_linter_rc).exists():
         shutil.copy(PATH_TO_BACKUP_LINTER_RC, path_to_linter_rc)
-    source_file_paths = glob("**/*.py")
-    arguments = ["pylint"]+source_file_paths
+    ruff_command = shutil.which("ruff")
+    if BUNDLED_RUFF_PATH.exists():
+        ruff_command = str(BUNDLED_RUFF_PATH)
+    command = (
+        [ruff_command]
+        if ruff_command
+        else [sys.executable, "-m", "ruff"]
+    )
+    arguments = command + [
+        "check",
+        "--quiet",
+        "--config",
+        path_to_linter_rc,
+        ".",
+    ]
     try:
         subprocess.run(arguments, check=True)
-    except subprocess.CalledProcessError:
+    except (OSError, subprocess.CalledProcessError):
         return False
     return True
 
@@ -78,9 +96,7 @@ def run_continuous_integration_no_print(
         test_result = run_tests()
         if (not test_result) and stop_on_failure:
             return False
-    if lint_result and test_result:
-        return True
-    return False
+    return bool(lint_result and test_result)
 
 def run_continuous_integration(lint=True, test=True, stop_on_failure=False):
     """ Run this file. """

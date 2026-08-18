@@ -45,8 +45,9 @@ class RoyalReposBackup:
 
     def _auto_set_logger(self):
         """ Construct our logging object. """
-        result = logging.getLogger()
+        result = logging.getLogger(f"{__name__}.{id(self)}")
         result.setLevel(logging.INFO)
+        result.propagate = False
         formatter = logging.Formatter(LOG_FORMAT)
         file_handler = logging.FileHandler(PATH_TO_LOG)
         file_handler.setLevel(logging.DEBUG)
@@ -66,7 +67,7 @@ class RoyalReposBackup:
         """ Run a given Git command in a given Git directory. """
         try:
             subprocess.run(["git", command], check=True, cwd=git_directory)
-        except subprocess.CalledProcessError as exc:
+        except (OSError, subprocess.CalledProcessError) as exc:
             self.logger.error(
                 "Non-zero exit code running git %s within %s: %s",
                 command,
@@ -78,6 +79,8 @@ class RoyalReposBackup:
 
     def back_up_all(self) -> bool:
         """ Back up ALL royal repos. """
+        if not self.config:
+            return False
         result = True
         self.logger.info("Backing up royal repos...")
         for repo in self.config.royal_repos:
