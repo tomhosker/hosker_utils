@@ -20,6 +20,8 @@ These instructions apply to the entire repository.
   require `sudo` unless the user explicitly asks.
 - Do not run the HMSS installer or the repository-backup commands as part of
   verification; they change the host system or external repositories.
+- Treat this repository as a role model for the owner's other repositories.
+  Prefer clear, modern, reusable practices and document intentional exceptions.
 
 ## Python conventions
 
@@ -41,12 +43,19 @@ These instructions apply to the entire repository.
 - Run `python3 validate.py` when a change affects linted Python code, provided
   it can run safely in the current environment.
 - Run `git diff --check` before handing work back.
+- Build and inspect the relevant release artifacts after packaging changes.
 - If a check cannot be run, state why in the final response.
 
 ## Documentation and packaging
 
+- Before declaring a pull request ready, agree the appropriate version bump
+  with the user and update the single version in `pyproject.toml`.
+- Ensure Python and Debian artifacts derive their version from
+  `pyproject.toml`; do not duplicate the version in scripts or configuration.
 - Keep installation instructions and supported Python versions accurate.
 - Update `README.md` when commands, configuration, or user-visible behaviour
   changes.
 - Include package data deliberately; do not add generated files, coverage
   output, build artifacts, logs, or local configuration to Git.
+- Keep examples suitable for reuse in other repositories, without introducing
+  abstraction merely for its own sake.

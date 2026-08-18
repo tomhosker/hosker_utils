@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hosker_utils"
-version = "2.6.1"
+version = "2.7.0"
 description = "General utility functions and HMSS command-line tools"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -14,16 +14,10 @@ authors = [
     { name = "Tom Hosker", email = "tomdothosker@gmail.com" },
 ]
 dependencies = [
-    "termcolor",
-]
-
-[project.optional-dependencies]
-dev = [
-    "build",
     "pytest>=7.1.2",
     "pytest-cov",
     "ruff>=0.5.0",
-    "twine",
+    "termcolor",
 ]
 
 [project.urls]
@@ -47,3 +41,15 @@ hosker_utils = [
     "wallpaper/thunderbird_infographics/*",
 ]
 
+[tool.hosker-utils.deb]
+package-name = "hosker-utils"
+section = "utils"
+priority = "optional"
+depends = [
+    "python3 (>= 3.11)",
+    "python3-pytest",
+    "python3-pytest-cov",
+    "python3-termcolor",
+    "git",
+    "libglib2.0-bin",
+]

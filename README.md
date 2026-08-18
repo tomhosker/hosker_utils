@@ -4,6 +4,11 @@ This repository provides the `hosker_utils` Python package and command-line
 helpers for configuring His Majesty's Software Suite (HMSS) and backing up a
 configured set of Git repositories.
 
+It also serves as a small, working reference for the standards expected in the
+owner's other repositories: declarative packaging, isolated tests, one-command
+validation, explicit release versions, and documented system effects. It is a
+role model, not a template; copy the principles rather than every file.
+
 ## Requirements
 
 - Python 3.11 or newer
@@ -16,7 +21,7 @@ Create a virtual environment, install the package, and run the checks:
 ```sh
 python3 -m venv .venv
 .venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install -e '.[dev]'
+.venv/bin/python -m pip install -e .
 .venv/bin/python -m ruff check .
 .venv/bin/python -m pytest
 .venv/bin/python validate.py
@@ -26,15 +31,41 @@ The installer runs `apt` through `sudo`, changes the GNOME wallpaper, and
 clones the repositories listed in `~/hmss_config.json`. Review that generated
 configuration before running the installer.
 
-Build release artifacts with `python3 -m build`. Validate them with
-`python3 -m twine check dist/*` before publishing.
+Build and validate Python release artifacts with `./update_version.sh`. The
+script creates an ignored `.venv-release` environment and installs current
+versions of `build` and Twine there; it never installs them into the system
+Python. Before completing a pull request, agree and set the next version in
+`pyproject.toml`.
+
+For a release-affecting change, the final checklist is:
+
+1. Run `python3 validate.py` and `git diff --check`.
+2. Agree and update the version in `pyproject.toml`.
+3. Build and validate the Python wheel and source distribution.
+4. Build and inspect the Debian package when Debian packaging has changed.
+5. Publish only as a separate, deliberate action.
+
+## Install
+
+For an isolated command-line installation on any supported distribution, use
+`pipx`:
+
+```sh
+pipx install .
+```
+
+On Debian-based systems, build and install a native package instead:
+
+```sh
+python3 tools/build_deb.py
+sudo apt install ./dist/hosker-utils_2.7.0_$(dpkg --print-architecture).deb
+```
+
+The Debian builder requires `dpkg-deb`, stages files in a temporary directory,
+and does not require root. APT handles the package's Python runtime
+dependencies. Because Ruff is not available in all APT catalogues, the builder
+bundles the Ruff executable from the active development environment.
 
 ## Install HMSS
 
-To install His Majesty's Software Suite:
-
-1. Run `python3 -m pip install --user .` in this directory.
-2. Run `install-hmss`.
-
-On distributions that prevent system Python package installation, use a
-virtual environment or `pipx` instead of overriding the package manager.
+After installing by either method, run `install-hmss`.

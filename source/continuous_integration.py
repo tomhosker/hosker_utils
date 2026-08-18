@@ -19,6 +19,7 @@ DEFAULT_PATH_TO_TEST_INI = "pytest.ini"
 PATH_TO_BACKUP_TEST_INI = \
     str(Path(__file__).parent/"backup_configs"/"backup_pytest.ini")
 PIP_INSTALL_THIS = ("pip", "install", ".")
+BUNDLED_RUFF_PATH = Path("/usr/lib/hosker-utils/ruff")
 
 #############
 # FUNCTIONS #
@@ -60,10 +61,15 @@ def run_linter(path_to_linter_rc=DEFAULT_PATH_TO_LINTER_RC):
     """Run Ruff on this repo."""
     if not Path(path_to_linter_rc).exists():
         shutil.copy(PATH_TO_BACKUP_LINTER_RC, path_to_linter_rc)
-    arguments = [
-        sys.executable,
-        "-m",
-        "ruff",
+    ruff_command = shutil.which("ruff")
+    if BUNDLED_RUFF_PATH.exists():
+        ruff_command = str(BUNDLED_RUFF_PATH)
+    command = (
+        [ruff_command]
+        if ruff_command
+        else [sys.executable, "-m", "ruff"]
+    )
+    arguments = command + [
         "check",
         "--config",
         path_to_linter_rc,
