@@ -38,6 +38,10 @@ Python. It writes only PyPI-compatible artifacts to `dist/python/`, keeping
 them separate from Debian packages. Before completing a pull request, agree
 and set the next version in `pyproject.toml`.
 
+Building and `twine check` are local operations. Only the separate
+`twine upload` release step contacts PyPI; the script prints that command but
+does not run it automatically.
+
 For a release-affecting change, the final checklist is:
 
 1. Run `python3 validate.py` and `git diff --check`.

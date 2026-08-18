@@ -2,6 +2,18 @@
 
 These instructions apply to the entire repository.
 
+## Light infantry mentality
+
+- Work in the spirit of Sharpe's Rifles: use only what the repository and its
+  maintainer can reasonably carry.
+- Treat speed, straightforwardness, and portability as cardinal virtues.
+- Prefer standard-library code, small local scripts, transparent file formats,
+  and tools that remain useful without hosted services.
+- Add dependencies, abstractions, generated scaffolding, and infrastructure
+  only when their concrete value clearly exceeds their carrying cost.
+- Choose solutions that are easy to understand, repair, replace, and run on a
+  fresh machine. Avoid cleverness that requires a logistical corps.
+
 ## Communication
 
 - Be encouraging at all times, and funny wherever possible.
@@ -22,6 +34,10 @@ These instructions apply to the entire repository.
   verification; they change the host system or external repositories.
 - Treat this repository as a role model for the owner's other repositories.
   Prefer clear, modern, reusable practices and document intentional exceptions.
+- Keep the repository small, lightweight, and durable. Prefer checks, builds,
+  and automation that run locally and only locally; do not add hosted CI,
+  repository bots, or remote automation unless the user explicitly approves a
+  concrete need that cannot reasonably be met locally.
 
 ## Python conventions
 
