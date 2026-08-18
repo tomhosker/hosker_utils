@@ -43,6 +43,7 @@ def print_encased(message, symbol="#", colour=None):
         print(message_line)
         print(hashes)
         print(" ")
+    sys.stdout.flush()
 
 def run_tests(path_to_test_ini=DEFAULT_PATH_TO_TEST_INI):
     """ Run PyTest. """
@@ -71,6 +72,7 @@ def run_linter(path_to_linter_rc=DEFAULT_PATH_TO_LINTER_RC):
     )
     arguments = command + [
         "check",
+        "--quiet",
         "--config",
         path_to_linter_rc,
         ".",

@@ -22,6 +22,7 @@ dependencies = [
 
 [project.urls]
 Repository = "https://github.com/tomhosker/hosker_utils"
+Changelog = "https://github.com/tomhosker/hosker_utils/blob/master/CHANGELOG.md"
 
 [project.scripts]
 back-up-royal-repos = "hosker_utils.cli:back_up_royal_repos_cli"

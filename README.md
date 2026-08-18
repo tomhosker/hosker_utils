@@ -34,8 +34,9 @@ configuration before running the installer.
 Build and validate Python release artifacts with `./update_version.sh`. The
 script creates an ignored `.venv-release` environment and installs current
 versions of `build` and Twine there; it never installs them into the system
-Python. Before completing a pull request, agree and set the next version in
-`pyproject.toml`.
+Python. It writes only PyPI-compatible artifacts to `dist/python/`, keeping
+them separate from Debian packages. Before completing a pull request, agree
+and set the next version in `pyproject.toml`.
 
 For a release-affecting change, the final checklist is:
 

@@ -5,6 +5,7 @@ set -eu
 
 RELEASE_ENV=".venv-release"
 RELEASE_PYTHON="$RELEASE_ENV/bin/python"
+RELEASE_OUTPUT_DIR="dist/python"
 
 # Keep release tooling isolated from both the system Python and the package's
 # runtime environment.
@@ -15,8 +16,9 @@ fi
 
 # Build and validate release artifacts. Publishing is deliberately separate so
 # running this script cannot upload a package by accident.
-"$RELEASE_PYTHON" -m build
-"$RELEASE_PYTHON" -m twine check dist/*
+rm -rf "$RELEASE_OUTPUT_DIR"
+"$RELEASE_PYTHON" -m build --outdir "$RELEASE_OUTPUT_DIR"
+"$RELEASE_PYTHON" -m twine check "$RELEASE_OUTPUT_DIR"/*
 
-echo "Artifacts are ready in dist/."
-echo "Publish with: $RELEASE_PYTHON -m twine upload dist/*"
+echo "Python artifacts are ready in $RELEASE_OUTPUT_DIR/."
+echo "Publish with: $RELEASE_PYTHON -m twine upload $RELEASE_OUTPUT_DIR/*"
